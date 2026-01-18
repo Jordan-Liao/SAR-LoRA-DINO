@@ -76,5 +76,3 @@ See `../CITATION.bib` / `../CITATION.cff`.
 ## License
 
 Apache 2.0 — see `LICENSE`.
-
-Some files are MIT-licensed (see `../LICENSES/MIT.txt` and `../THIRD_PARTY_NOTICES.md`).

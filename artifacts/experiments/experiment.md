@@ -13,7 +13,7 @@
 | Field | Value |
 | --- | --- |
 | Objective | Validate end-to-end train + eval on SARDet-100K via small COCO subsets. |
-| Baseline | RetinaNet R50-FPN (no MSFA pretrain weights). |
+| Baseline | RetinaNet R50-FPN (standard ImageNet-pretrained ResNet-50). |
 | Model | RetinaNet R50-FPN, `num_classes=6`, `test_cfg.score_thr=0.0` to avoid empty-result eval on tiny runs. |
 | Weights | Backbone: `torchvision://resnet50` (from `mmdet_toolkit/configs/_base_/models/retinanet_r50_fpn.py`). |
 | Code path | `scripts/run_sardet_smoke.sh`, `scripts/mmdet_train.py`, `scripts/mmdet_test_to_json.py`, `scripts/make_coco_subset.py`, `mmdet_toolkit/local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py` |
@@ -184,13 +184,13 @@
 | Results | Smoke `coco/bbox_mAP = 0.001` (see `artifacts/work_dirs/E0007_smoke/smoke_metrics.json`); trainable p(M)=12.872 (backbone=3.469, neck=4.475, head=4.928). Full Val `coco/bbox_mAP = 0.539` (see `artifacts/work_dirs/E0007_full/val_metrics.json`). |
 
 
-### E0008: ConvNeXt-S (Sup/IMP) + RetinaNet (Linear probe, no LoRA)
+### E0008: ConvNeXt-S (ImageNet-supervised) + RetinaNet (Linear probe, no LoRA)
 | Field | Value |
 | --- | --- |
 | Objective | Baseline: supervised ConvNeXt-S with frozen backbone; train FPN/head; no LoRA. |
-| Baseline | Compare against MSFA-pretrained (E0009) and DINOv3-LoRA (E0002). |
+| Baseline | Compare against E0003 (Dinov3 linear probe) and E0002 (Dinov3-LoRA). |
 | Model | `TimmConvNeXt` (model_name=`convnext_small`) + RetinaNet. |
-| Weights | `model.backbone.model_name=convnext_small` (timm ImageNet-supervised; `pretrained=True`; a.k.a. “IMP” in MSFA paper). |
+| Weights | `model.backbone.model_name=convnext_small` (timm ImageNet-supervised; `pretrained=True`). |
 | Code path | `mmdet_toolkit/local_configs/SARDet/sup_baselines/retinanet_timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py` |
 | Params | Backbone frozen; neck/head trained. Set `EVAL_SPLITS=val,test` to also write `test_metrics.json`. |
 | Metrics (must save) | `artifacts/work_dirs/E0008_full/val_metrics.json` (and `artifacts/work_dirs/E0008_full/test_metrics.json` if `EVAL_SPLITS=val,test`) |
@@ -209,37 +209,12 @@
 | Results | Trainable p(M)=9.403 (backbone=0.000, neck=4.475, head=4.928); Smoke `coco/bbox_mAP = 0.002` (see `artifacts/work_dirs/E0008_smoke/smoke_metrics.json`); Full Val `coco/bbox_mAP = 0.401` (see `artifacts/work_dirs/E0008_full/val_metrics.json`). |
 
 
-### E0009: ConvNeXt-S (MSFA) + RetinaNet (Linear probe, no LoRA)
-| Field | Value |
-| --- | --- |
-| Objective | Baseline: MSFA-pretrained ConvNeXt-S with frozen backbone; train FPN/head; no LoRA. |
-| Baseline | Compare against Sup/IMP (E0008) and DINOv3-LoRA (E0002). |
-| Model | MSFA ConvNeXt-S + RetinaNet. |
-| Weights | Requires `MSFA_CKPT` (see `artifacts/weights/README.md`; source: `https://pan.baidu.com/s/1SuEOl_ImqjoT5Y3pYxZt4w?pwd=c6fo`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/msfa_baselines/retinanet_msfa-convnext-small_linear-probe_1x_sardet_bs64_amp.py` |
-| Params | Backbone frozen; neck/head trained. Requires `MSFA_CKPT`. Set `EVAL_SPLITS=val,test` to also write `test_metrics.json`. |
-| Metrics (must save) | `artifacts/work_dirs/E0009_full/val_metrics.json` (and `artifacts/work_dirs/E0009_full/test_metrics.json` if `EVAL_SPLITS=val,test`) |
-| Checks | Record `coco/bbox_mAP` and trainable params p(M). |
-| VRAM | TBD |
-| Time/epoch | TBD |
-| Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/msfa_baselines/retinanet_msfa-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0009_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/msfa_baselines/retinanet_msfa-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0009_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/msfa_baselines/retinanet_msfa-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0009_smoke` |
-| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/msfa_baselines/retinanet_msfa-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0009_full --gpus 4 --seed 0` |
-| Smoke | [x] |
-| Full | [x] |
-| Logs | `artifacts/work_dirs/E0009_smoke/smoke_*.log`, `artifacts/work_dirs/E0009_full/*.log` |
-| Artifacts | `artifacts/work_dirs/E0009_smoke/smoke_metrics.json`, `artifacts/work_dirs/E0009_full/*.pth`, `artifacts/work_dirs/E0009_full/val_metrics.json` |
-| Results | Trainable p(M)=9.403 (backbone=0.000, neck=4.475, head=4.928). Checkpoint expected at `artifacts/weights/msfa_convnext_small_msfa_pretrained.pth` (download from the released weights bundle; see `artifacts/weights/README.md`). Smoke `coco/bbox_mAP = 0.004` (see `artifacts/work_dirs/E0009_smoke/smoke_metrics.json`); Full Val `coco/bbox_mAP = 0.409` (see `artifacts/work_dirs/E0009_full/val_metrics.json`). |
-
-
 ### E0010: Visualize detections (no LoRA)
 | Field | Value |
 | --- | --- |
 | Objective | Export qualitative detection images without LoRA (e.g., linear probe checkpoint). |
 | Baseline | Compare against E0011 (with LoRA). |
-| Model | Any non-LoRA model checkpoint from E0003/E0008/E0009. |
+| Model | Any non-LoRA model checkpoint from E0003/E0008. |
 | Weights | A finished checkpoint (e.g. `artifacts/work_dirs/E0003_full/best_*.pth`). |
 | Code path | `visualization/visualize_sardet.sh`, `visualization/mmdet_test_export.py` |
 | Params | Use `--show-dir` to write painted images. |
@@ -309,11 +284,11 @@
 | Results | Smoke `coco/bbox_mAP = 0.002` (see `artifacts/work_dirs/E0019_smoke/smoke_metrics.json`); trainable p(M)=58.856 (backbone=49.453, neck=4.475, head=4.928). Full Val `coco/bbox_mAP = 0.572` (see `artifacts/work_dirs/E0019_full/val_metrics.json`); best ckpt: `artifacts/work_dirs/E0019_full/best_coco_bbox_mAP_epoch_12.pth`. VR export (val+test): `artifacts/visualizations/VR/E0019_full-ft/val/` and `artifacts/visualizations/VR/E0019_full-ft/test/` (see `metrics.json`). |
 
 
-### E0020: ConvNeXt-S (Sup/IMP) + RetinaNet (Full fine-tune, no LoRA)
+### E0020: ConvNeXt-S (ImageNet-supervised) + RetinaNet (Full fine-tune, no LoRA)
 | Field | Value |
 | --- | --- |
 | Objective | Baseline: train ImageNet-supervised ConvNeXt-S backbone + neck/head on SARDet-100K (full fine-tune). |
-| Baseline | Compare against E0008 (linear probe Sup/IMP) and E0002 (DINOv3-LoRA). |
+| Baseline | Compare against E0008 (linear probe) and E0002 (Dinov3-LoRA). |
 | Model | `TimmConvNeXt` (ImageNet-supervised weights) + RetinaNet. |
 | Weights | `model.backbone.model_name=convnext_small` (`pretrained=True`). |
 | Code path | `mmdet_toolkit/local_configs/SARDet/sup_baselines/retinanet_timm-convnext-small_full-ft_1x_sardet_bs64_amp.py`, `mmdet_toolkit/sar_lora_dino/models/backbones/timm_convnext.py` |

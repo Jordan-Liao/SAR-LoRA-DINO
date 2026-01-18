@@ -39,7 +39,6 @@ export SARDET100K_ROOT=/path/to/SARDet_100K
 This repo does not vendor large checkpoints.
 
 - DINOv3 (ConvNeXt) backbones are pulled automatically by `timm` when `pretrained=True` (internet required).
-- MSFA baseline (E0009) requires an MSFA-pretrained ConvNeXt-S checkpoint via `MSFA_CKPT`. We do not redistribute it; see `artifacts/weights/README.md`.
 - Our trained SARDet-100K checkpoints (once published): see Releases below.
 
 ## Reproducibility
@@ -78,4 +77,5 @@ This repository is mixed-licensed:
 
 - `LICENSE`: CC BY-NC 4.0 (repository-level assets by default)
 - `mmdet_toolkit/LICENSE`: Apache 2.0 (MMDetection-based code)
-- `LICENSES/MIT.txt`: MIT (ConvNeXt code; details in `THIRD_PARTY_NOTICES.md`)
+
+See `THIRD_PARTY_NOTICES.md` for attributions.
