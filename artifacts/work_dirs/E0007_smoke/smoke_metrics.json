@@ -1,0 +1,17 @@
+{
+  "_meta": {
+    "eid": "E0007",
+    "generated_at": "2026-01-19 00:31:51",
+    "name": "Dinov3 ConvNeXt-S + RetinaNet (LoRA r=16, fc1+fc2, unfreeze stage3)",
+    "note": "This file is materialized from the recorded paper table. It may not contain every raw evaluator field produced by MMDetection.",
+    "run": "",
+    "source_tsv": "artifacts/experiments/experiment_results.tsv",
+    "split": "smoke"
+  },
+  "coco/bbox_mAP": 0.001,
+  "coco/bbox_mAP_50": 0.004,
+  "coco/bbox_mAP_75": 0.001,
+  "coco/bbox_mAP_l": 0.0,
+  "coco/bbox_mAP_m": 0.008,
+  "coco/bbox_mAP_s": 0.004
+}

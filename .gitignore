@@ -1,0 +1,70 @@
+# Python cache / build artifacts
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# Large artifacts (never commit)
+*.pth
+*.pt
+*.ckpt
+*.onnx
+*.pkl
+
+# OpenMMLab / mim
+.mim/
+**/.mim/
+
+# Local runs / logs / exports
+/work_dirs/
+nohup.out
+*.log
+*.log.json
+*.out
+
+# Paper/repro artifacts (tracked docs, ignore heavy outputs)
+artifacts/weights/**
+!artifacts/weights/README.md
+
+artifacts/work_dirs/**
+!artifacts/work_dirs/**/
+!artifacts/work_dirs/README.md
+!artifacts/work_dirs/**/smoke_metrics.json
+!artifacts/work_dirs/**/val_metrics.json
+!artifacts/work_dirs/**/test_metrics.json
+!artifacts/work_dirs/**/metrics.json
+!artifacts/work_dirs/**/metrics*.json
+
+artifacts/visualizations/**
+!artifacts/visualizations/README.md
+!artifacts/visualizations/VR/
+!artifacts/visualizations/VR/*/
+!artifacts/visualizations/VR/*/*/
+!artifacts/visualizations/VR/*/*/metrics.json
+
+# Release bundles (zips/manifests for GitHub Releases; keep out of git)
+artifacts/bundles/**
+
+# Dataset (keep scripts/configs; do not vendor raw data)
+data/SARDet_100K
+data/SARDet_100K/
+data/sardet_subsets
+data/sardet_subsets/
+
+# Experiment runner queues (local only)
+.rd_queue*/

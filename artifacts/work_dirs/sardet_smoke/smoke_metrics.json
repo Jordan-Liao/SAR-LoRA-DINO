@@ -1,0 +1,17 @@
+{
+  "_meta": {
+    "eid": "E0001",
+    "generated_at": "2026-01-19 00:31:51",
+    "name": "SARDet-100K smoke (RetinaNet R50-FPN)",
+    "note": "This file is materialized from the recorded paper table. It may not contain every raw evaluator field produced by MMDetection.",
+    "run": "",
+    "source_tsv": "artifacts/experiments/experiment_results.tsv",
+    "split": "smoke"
+  },
+  "coco/bbox_mAP": 0.003,
+  "coco/bbox_mAP_50": 0.008,
+  "coco/bbox_mAP_75": 0.003,
+  "coco/bbox_mAP_l": 0.0,
+  "coco/bbox_mAP_m": 0.017,
+  "coco/bbox_mAP_s": 0.005
+}
