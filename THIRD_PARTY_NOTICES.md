@@ -6,7 +6,7 @@ retain their original licenses.
 ## OpenMMLab MMDetection (Apache 2.0)
 
 - Source: https://github.com/open-mmlab/mmdetection
-- Files: `mmdet_toolkit/tools/*`, plus some MMDetection-derived utilities in `mmdet_toolkit/sar_lora_dino/`.
+- Files: MMDetection-style config templates under `mmdet_toolkit/configs/_base_/`.
 - License: Apache 2.0 (see `mmdet_toolkit/LICENSE`)
 
 ## Meta ConvNeXt (MIT)

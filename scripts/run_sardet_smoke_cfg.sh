@@ -120,7 +120,7 @@ conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/make_coco_subset.py" \
   --num-images "${VAL_NUM_IMAGES}" \
   --seed "${SEED}"
 
-conda run -n "${ENV_NAME}" python "${REPO_ROOT}/mmdet_toolkit/tools/train.py" \
+conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/mmdet_train.py" \
   "${CONFIG_ABS}" \
   --work-dir "${WORK_DIR_ABS}" \
   --cfg-options \

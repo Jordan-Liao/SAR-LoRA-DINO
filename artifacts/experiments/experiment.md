@@ -16,7 +16,7 @@
 | Baseline | RetinaNet R50-FPN (no MSFA pretrain weights). |
 | Model | RetinaNet R50-FPN, `num_classes=6`, `test_cfg.score_thr=0.0` to avoid empty-result eval on tiny runs. |
 | Weights | Backbone: `torchvision://resnet50` (from `mmdet_toolkit/configs/_base_/models/retinanet_r50_fpn.py`). |
-| Code path | `scripts/run_sardet_smoke.sh`, `mmdet_toolkit/tools/train.py`, `scripts/mmdet_test_to_json.py`, `scripts/make_coco_subset.py`, `mmdet_toolkit/local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py` |
+| Code path | `scripts/run_sardet_smoke.sh`, `scripts/mmdet_train.py`, `scripts/mmdet_test_to_json.py`, `scripts/make_coco_subset.py`, `mmdet_toolkit/local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py` |
 | Params | Train subset: 200 images; Val subset: 50 images; Epochs: 1; Img scale: (800,800); Env: `sar_lora_dino`; GPU: auto-selected via `CUDA_VISIBLE_DEVICES` if unset. |
 | Metrics (must save) | `artifacts/work_dirs/sardet_smoke/smoke_metrics.json` (`coco/bbox_mAP`, `coco/bbox_mAP_50`, ...) |
 | Checks | Command exits 0; metrics JSON exists and includes `coco/bbox_mAP`. |
@@ -24,7 +24,7 @@
 | Time/epoch | ~1 min |
 | Total time | ~2 min |
 | Single-GPU script | `bash scripts/run_sardet_smoke.sh` |
-| Multi-GPU script | `bash mmdet_toolkit/tools/dist_train.sh mmdet_toolkit/local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py 2 --work-dir artifacts/work_dirs/sardet_smoke_dist` |
+| Multi-GPU script | `MAX_EPOCHS=1 TRAIN_NUM_IMAGES=200 VAL_NUM_IMAGES=50 bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py --work-dir artifacts/work_dirs/sardet_smoke_dist --gpus 2 --seed 0` |
 | Smoke cmd | `bash scripts/run_sardet_smoke.sh` |
 | Full cmd | `bash scripts/run_sardet_smoke.sh` |
 | Smoke | [x] |
@@ -241,7 +241,7 @@
 | Baseline | Compare against E0011 (with LoRA). |
 | Model | Any non-LoRA model checkpoint from E0003/E0008/E0009. |
 | Weights | A finished checkpoint (e.g. `artifacts/work_dirs/E0003_full/best_*.pth`). |
-| Code path | `visualization/visualize_sardet.sh`, `mmdet_toolkit/tools/test.py` |
+| Code path | `visualization/visualize_sardet.sh`, `visualization/mmdet_test_export.py` |
 | Params | Use `--show-dir` to write painted images. |
 | Metrics (must save) | N/A |
 | Checks | Output directory contains painted images. |
@@ -266,7 +266,7 @@
 | Baseline | Compare against E0010 (no LoRA). |
 | Model | LoRA model checkpoint from E0002/E0004/E0005/E0006/E0007. |
 | Weights | A finished checkpoint (e.g. `artifacts/work_dirs/E0002_full/best_*.pth`). |
-| Code path | `visualization/visualize_sardet.sh`, `mmdet_toolkit/tools/test.py` |
+| Code path | `visualization/visualize_sardet.sh`, `visualization/mmdet_test_export.py` |
 | Params | Use the same split and `--show-dir` as E0010 for fair visuals. |
 | Metrics (must save) | N/A |
 | Checks | Output directory contains painted images. |

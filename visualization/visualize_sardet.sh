@@ -27,7 +27,7 @@ Usage:
   bash visualization/visualize_sardet.sh --config <config.py> --checkpoint <ckpt.pth> --out-dir <dir> [--split val|test] [--num-images N] [--seed S] [--full]
 
 Notes:
-  - This wraps `mmdet_toolkit/tools/test.py` with `--work-dir` and `--show-dir` to export painted detections.
+  - This uses `visualization/mmdet_test_export.py` with `--show-dir` to export painted detections.
   - By default, this visualizes a small COCO subset (`--split val --num-images 50`) for faster export.
   - If CUDA_VISIBLE_DEVICES is unset, this script auto-picks the GPU with most free memory.
   - Output is written under: <out_dir>/<timestamp>/vis/
@@ -165,10 +165,12 @@ else
 fi
 
 TEST_CMD=(
-  conda run -n "${ENV_NAME}" python "${REPO_ROOT}/mmdet_toolkit/tools/test.py"
-  "${CONFIG_ABS}"
-  "${CHECKPOINT_ABS}"
+  conda run -n "${ENV_NAME}" python "${REPO_ROOT}/visualization/mmdet_test_export.py"
+  --config "${CONFIG_ABS}"
+  --checkpoint "${CHECKPOINT_ABS}"
   --work-dir "${OUT_DIR_ABS}"
+  --out-metrics "${OUT_DIR_ABS}/metrics.json"
+  --out-pkl "${OUT_DIR_ABS}/predictions.pkl"
   --show-dir vis
 )
 if [[ "${#CFG_OVERRIDES[@]}" -gt 0 ]]; then

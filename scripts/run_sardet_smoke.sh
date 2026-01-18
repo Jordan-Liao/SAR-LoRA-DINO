@@ -59,7 +59,7 @@ conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/make_coco_subset.py" \
   --num-images 50 \
   --seed 0
 
-conda run -n "${ENV_NAME}" python "${REPO_ROOT}/mmdet_toolkit/tools/train.py" \
+conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/mmdet_train.py" \
   "${CONFIG}" \
   --work-dir "${WORK_DIR}" 2>&1 | tee "${WORK_DIR}/smoke_train.log"
 

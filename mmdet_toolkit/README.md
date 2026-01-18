@@ -4,9 +4,8 @@ This folder contains the MMDetection 3.x style codebase used by **SAR-LoRA-DINO*
 
 It provides:
 
-- the `sar_lora_dino` python package (custom datasets / backbones / LoRA utilities)
+- the `sar_lora_dino` python package (custom backbones / LoRA utilities)
 - MMDet configs under `local_configs/`
-- training/testing entrypoints under `tools/`
 
 ## Install
 
@@ -58,11 +57,11 @@ From repo root (recommended), use the reproducibility wrappers:
 - smoke: `bash scripts/run_sardet_smoke.sh`
 - full: `bash scripts/run_sardet_full_cfg.sh --config <...> --work-dir <...>`
 
-If you prefer MMDet-native commands inside `mmdet_toolkit/`:
+Low-level entrypoints (no wrappers) live under `../scripts/` and `../visualization/`:
 
 ```bash
-python tools/train.py local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py --work-dir ../artifacts/work_dirs/sardet_smoke
-python tools/test.py  local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py ../artifacts/work_dirs/sardet_smoke/latest.pth
+conda run -n sar_lora_dino python ../scripts/mmdet_train.py local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py --work-dir ../artifacts/work_dirs/sardet_smoke
+conda run -n sar_lora_dino python ../scripts/mmdet_test_to_json.py --config local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py --checkpoint ../artifacts/work_dirs/sardet_smoke/latest.pth --work-dir ../artifacts/work_dirs/sardet_smoke --out-json ../artifacts/work_dirs/sardet_smoke/val_metrics.json
 ```
 
 ## Configs

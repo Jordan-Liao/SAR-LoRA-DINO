@@ -16,7 +16,7 @@ OUT_ROOT=artifacts/visualizations/VR SPLITS=val,test ENV_NAME=sar_lora_dino \
 
 ## Quick visualization (subset or full)
 
-- `visualization/visualize_sardet.sh`: quick painted detections using `mmdet_toolkit/tools/test.py` + `--show-dir`.
+- `visualization/visualize_sardet.sh`: quick painted detections using `visualization/mmdet_test_export.py` + `--show-dir`.
 
 ```bash
 bash visualization/visualize_sardet.sh \

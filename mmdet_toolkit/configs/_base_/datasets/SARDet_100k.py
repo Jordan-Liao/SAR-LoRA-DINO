@@ -1,27 +1,24 @@
-# dataset settings
 import os
 from pathlib import Path
 
-dataset_type = 'SAR_Det_Finegrained_Dataset' 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
 data_root = os.environ.get("SARDET100K_ROOT", str(_REPO_ROOT / "data" / "SARDet_100K"))
 if not data_root.endswith(("/", "\\")):
     data_root += "/"
 
-# Example to use different file client
-# Method 1: simply set the data root and let the file I/O module
-# automatically infer from prefix (not support LMDB and Memcache yet)
-
-# data_root = 's3://openmmlab/datasets/detection/coco/'
-
-# Method 2: Use `backend_args`, `file_client_args` in versions before 3.0.0rc6
-# backend_args = dict(
-#     backend='petrel',
-#     path_mapping=dict({
-#         './data/': 's3://openmmlab/datasets/detection/',
-#         'data/': 's3://openmmlab/datasets/detection/'
-#     }))
 backend_args = None
+
+metainfo = dict(
+    classes=("ship", "aircraft", "car", "tank", "bridge", "harbor"),
+    palette=[
+        (220, 20, 60),
+        (0, 0, 230),
+        (106, 0, 228),
+        (0, 182, 0),
+        (200, 182, 0),
+        (0, 182, 200),
+    ],
+)
 
 train_pipeline = [
     dict(type='LoadImageFromFile', backend_args=backend_args),
@@ -47,7 +44,8 @@ train_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=True),
     batch_sampler=dict(type='AspectRatioBatchSampler'),
     dataset=dict(
-        type=dataset_type,
+        type='CocoDataset',
+        metainfo=metainfo,
         data_root=data_root,
         ann_file='Annotations/train.json',
         data_prefix=dict(img='JPEGImages/train/'),
@@ -61,14 +59,14 @@ val_dataloader = dict(
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False),
     dataset=dict(
-        type=dataset_type,
+        type='CocoDataset',
+        metainfo=metainfo,
         data_root=data_root,
         ann_file='Annotations/val.json',
         data_prefix=dict(img='JPEGImages/val/'),
         test_mode=True,
         pipeline=test_pipeline,
         backend_args=backend_args))
-test_dataloader = val_dataloader
 
 val_evaluator = dict(
     type='CocoMetric',
@@ -85,7 +83,8 @@ test_dataloader = dict(
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False),
     dataset=dict(
-        type=dataset_type,
+        type='CocoDataset',
+        metainfo=metainfo,
         data_root=data_root,
         ann_file='Annotations/test.json',
         data_prefix=dict(img='JPEGImages/test/'),

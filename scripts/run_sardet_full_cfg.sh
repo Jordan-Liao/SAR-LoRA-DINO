@@ -197,7 +197,7 @@ if [[ -n "${RESUME_CKPT}" ]]; then
 fi
 
 if [[ "${GPUS}" == "1" ]]; then
-  conda run -n "${ENV_NAME}" python "${REPO_ROOT}/mmdet_toolkit/tools/train.py" \
+  conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/mmdet_train.py" \
     "${CONFIG_ABS}" \
     --work-dir "${WORK_DIR_ABS}" \
     "${RESUME_ARGS[@]}" \
@@ -217,9 +217,13 @@ else
   fi
   echo "PORT=${PORT:-<unset>}"
   env -u NCCL_PROTO -u NCCL_P2P_LEVEL -u NCCL_MIN_NCHANNELS -u NCCL_MAX_NCHANNELS -u NCCL_P2P_DISABLE -u NCCL_IB_DISABLE \
-    conda run -n "${ENV_NAME}" bash "${REPO_ROOT}/mmdet_toolkit/tools/dist_train.sh" \
+    conda run -n "${ENV_NAME}" python -m torch.distributed.run \
+      --nproc_per_node "${GPUS}" \
+      --master_addr "${MASTER_ADDR:-127.0.0.1}" \
+      --master_port "${PORT}" \
+      "${REPO_ROOT}/scripts/mmdet_train.py" \
       "${CONFIG_ABS}" \
-      "${GPUS}" \
+      --launcher pytorch \
       "${RESUME_ARGS[@]}" \
       --work-dir "${WORK_DIR_ABS}" \
       --cfg-options "${CFG_OVERRIDES[@]}" 2>&1 | tee "${WORK_DIR_ABS}/train.log"
