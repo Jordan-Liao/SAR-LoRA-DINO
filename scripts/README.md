@@ -2,7 +2,7 @@
 
 ## Repro runners
 
-- `scripts/verify_env.sh`: checks the conda env can import `mmcv.ops`, `mmdet`, `sar_lora_dino` and sees CUDA.
+- `scripts/verify_env.sh`: checks the conda env can import `timm`, `mmcv.ops`, `mmdet`, `sar_lora_dino` and sees CUDA.
 - `scripts/run_sardet_smoke.sh`: end-to-end smoke train+eval on small SARDet-100K subsets.
 - `scripts/run_sardet_smoke_cfg.sh`: smoke runner for any MMDet config (subset train+eval).
 - `scripts/run_sardet_full_cfg.sh`: full train + eval (val/test) runner for any MMDet config.

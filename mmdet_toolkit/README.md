@@ -1,6 +1,7 @@
-# MMDetection Toolkit (`mmdet_toolkit/`)
+# MMDetection Integration (`mmdet_toolkit/`)
 
-This folder contains the MMDetection 3.x style codebase used by **SAR-LoRA-DINO** (SARDet-100K).
+This folder contains SAR-LoRA-DINO’s MMDetection 3.x integration (configs + custom modules).
+It is **not** a full fork of MMDetection — you install `mmdet` via `mim`/`pip`, and this repo provides the `sar_lora_dino` package and experiment configs.
 
 It provides:
 

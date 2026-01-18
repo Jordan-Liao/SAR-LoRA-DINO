@@ -9,10 +9,10 @@ ENV_NAME="${ENV_NAME:-sar_lora_dino}"
 conda create -y -n "${ENV_NAME}" python=3.8
 conda activate "${ENV_NAME}"
 
-# install pytorch
+# install pytorch (example: CUDA 11.8)
 conda install -y pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.8 -c pytorch -c nvidia
-pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
-# install dependencies of openmmlab
+
+# install MMDetection stack
 pip install -U openmim
 mim install "mmengine==0.8.4"
 mim install "mmcv==2.0.1"
