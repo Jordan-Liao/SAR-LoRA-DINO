@@ -16,7 +16,6 @@ from mmdet.utils import setup_cache_size_limit_of_dynamo
 
 import sar_lora_dino  # noqa: F401
 
-# TODO: support fuse_conv_bn and format_only
 def parse_args():
     parser = argparse.ArgumentParser(
         description='MMDet test (and eval) a model')
