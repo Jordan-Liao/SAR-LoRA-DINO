@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sar-lora-dino"
+version = "0.1.0"
+description = "SAR-LoRA-DINO: DINOv3 (ConvNeXt) + LoRA for SARDet-100K (MMDetection 3.x)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [{ name = "Jordan-Liao" }]
+keywords = ["sar", "object-detection", "dinov3", "convnext", "lora", "mmdetection"]
+dependencies = ["timm>=1.0.17"]
+
+[project.urls]
+Repository = "https://github.com/Jordan-Liao/SAR-LoRA-DINO"
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[tool.setuptools.packages.find]
+include = ["sar_lora_dino*"]

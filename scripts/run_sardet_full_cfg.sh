@@ -197,7 +197,7 @@ if [[ -n "${RESUME_CKPT}" ]]; then
 fi
 
 if [[ "${GPUS}" == "1" ]]; then
-  conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/mmdet_train.py" \
+  conda run -n "${ENV_NAME}" python "${REPO_ROOT}/tools/train.py" \
     "${CONFIG_ABS}" \
     --work-dir "${WORK_DIR_ABS}" \
     "${RESUME_ARGS[@]}" \
@@ -221,7 +221,7 @@ else
       --nproc_per_node "${GPUS}" \
       --master_addr "${MASTER_ADDR:-127.0.0.1}" \
       --master_port "${PORT}" \
-      "${REPO_ROOT}/scripts/mmdet_train.py" \
+      "${REPO_ROOT}/tools/train.py" \
       "${CONFIG_ABS}" \
       --launcher pytorch \
       "${RESUME_ARGS[@]}" \
@@ -249,7 +249,7 @@ eval_split() {
   local out_json="$4"
   local out_log="$5"
 
-  conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/mmdet_test_to_json.py" \
+  conda run -n "${ENV_NAME}" python "${REPO_ROOT}/tools/test_to_json.py" \
     --config "${CONFIG_ABS}" \
     --checkpoint "${CKPT}" \
     --work-dir "${WORK_DIR_ABS}" \

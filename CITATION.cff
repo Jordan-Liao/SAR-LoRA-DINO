@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use SAR-LoRA-DINO in your research, please cite it as software."
+title: "SAR-LoRA-DINO"
+type: software
+license: "CC-BY-NC-4.0"
+repository-code: "https://github.com/Jordan-Liao/SAR-LoRA-DINO"
+keywords:
+  - synthetic aperture radar
+  - sar
+  - object detection
+  - mmdetection
+  - lora
+  - dinov3
+authors:
+  - name: "Jordan-Liao"
+preferred-citation:
+  type: software
+  title: "SAR-LoRA-DINO"
+  authors:
+    - name: "Jordan-Liao"
+  year: 2026
+  url: "https://github.com/Jordan-Liao/SAR-LoRA-DINO"

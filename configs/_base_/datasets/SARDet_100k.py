@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-_REPO_ROOT = Path(__file__).resolve().parents[4]
+_REPO_ROOT = Path(__file__).resolve().parents[3]
 data_root = os.environ.get("SARDET100K_ROOT", str(_REPO_ROOT / "data" / "SARDet_100K"))
 if not data_root.endswith(("/", "\\")):
     data_root += "/"

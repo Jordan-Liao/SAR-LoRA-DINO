@@ -15,8 +15,8 @@
 | Objective | Validate end-to-end train + eval on SARDet-100K via small COCO subsets. |
 | Baseline | RetinaNet R50-FPN (standard ImageNet-pretrained ResNet-50). |
 | Model | RetinaNet R50-FPN, `num_classes=6`, `test_cfg.score_thr=0.0` to avoid empty-result eval on tiny runs. |
-| Weights | Backbone: `torchvision://resnet50` (from `mmdet_toolkit/configs/_base_/models/retinanet_r50_fpn.py`). |
-| Code path | `scripts/run_sardet_smoke.sh`, `scripts/mmdet_train.py`, `scripts/mmdet_test_to_json.py`, `scripts/make_coco_subset.py`, `mmdet_toolkit/local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py` |
+| Weights | Backbone: `torchvision://resnet50` (from `configs/_base_/models/retinanet_r50_fpn.py`). |
+| Code path | `scripts/run_sardet_smoke.sh`, `tools/train.py`, `tools/test_to_json.py`, `scripts/make_coco_subset.py`, `configs/sardet100k/smoke/retinanet_r50_sardet_smoke.py` |
 | Params | Train subset: 200 images; Val subset: 50 images; Epochs: 1; Img scale: (800,800); Env: `sar_lora_dino`; GPU: auto-selected via `CUDA_VISIBLE_DEVICES` if unset. |
 | Metrics (must save) | `artifacts/work_dirs/sardet_smoke/smoke_metrics.json` (`coco/bbox_mAP`, `coco/bbox_mAP_50`, ...) |
 | Checks | Command exits 0; metrics JSON exists and includes `coco/bbox_mAP`. |
@@ -24,7 +24,7 @@
 | Time/epoch | ~1 min |
 | Total time | ~2 min |
 | Single-GPU script | `bash scripts/run_sardet_smoke.sh` |
-| Multi-GPU script | `MAX_EPOCHS=1 TRAIN_NUM_IMAGES=200 VAL_NUM_IMAGES=50 bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py --work-dir artifacts/work_dirs/sardet_smoke_dist --gpus 2 --seed 0` |
+| Multi-GPU script | `MAX_EPOCHS=1 TRAIN_NUM_IMAGES=200 VAL_NUM_IMAGES=50 bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/smoke/retinanet_r50_sardet_smoke.py --work-dir artifacts/work_dirs/sardet_smoke_dist --gpus 2 --seed 0` |
 | Smoke cmd | `bash scripts/run_sardet_smoke.sh` |
 | Full cmd | `bash scripts/run_sardet_smoke.sh` |
 | Smoke | [x] |
@@ -41,17 +41,17 @@
 | Baseline | E0003 (Dinov3 linear probe, no LoRA). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `model.backbone.model_name=convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py`, `mmdet_toolkit/sar_lora_dino/models/backbones/dinov3_timm_convnext_lora.py`, `mmdet_toolkit/sar_lora_dino/models/lora.py`, `scripts/run_sardet_smoke_cfg.sh`, `scripts/mmdet_test_to_json.py`, `scripts/count_trainable_params.py` |
+| Code path | `configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py`, `sar_lora_dino/models/backbones/dinov3_timm_convnext_lora.py`, `sar_lora_dino/models/lora.py`, `scripts/run_sardet_smoke_cfg.sh`, `tools/test_to_json.py`, `tools/print_model_stats.py` |
 | Params | LoRA: target=`(mlp.fc1,mlp.fc2)`, r=16, alpha=32; backbone frozen; neck/head trained. Full runs use seeds {0,1,2} via `--cfg-options randomness.seed=<seed>`. |
 | Metrics (must save) | For each seed: `artifacts/work_dirs/E0002_full_seed<seed>/val_metrics.json`, `artifacts/work_dirs/E0002_full_seed<seed>/test_metrics.json` (SARDet-100K Val/Test COCO bbox metrics). |
 | Checks | `coco/bbox_mAP` exists; compute mean±std over seeds; record trainable params p(M). |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0002_full_seed0 --gpus 1 --seed 0` |
-| Multi-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0002_full_seed0 --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0002_smoke` |
-| Full cmd | `for s in 0 1 2; do EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0002_full_seed${s} --gpus 4 --seed ${s}; done` |
+| Single-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0002_full_seed0 --gpus 1 --seed 0` |
+| Multi-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0002_full_seed0 --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0002_smoke` |
+| Full cmd | `for s in 0 1 2; do EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0002_full_seed${s} --gpus 4 --seed ${s}; done` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0002_smoke/smoke_train.log`, `artifacts/work_dirs/E0002_smoke/smoke_test.log`, `artifacts/work_dirs/E0002_full_seed<seed>/train.log`, `artifacts/work_dirs/E0002_full_seed<seed>/test_val.log`, `artifacts/work_dirs/E0002_full_seed<seed>/test_test.log` |
@@ -66,17 +66,17 @@
 | Baseline | Compare against E0002 to isolate LoRA gain. |
 | Model | `TimmConvNeXt` (Dinov3 weights) + RetinaNet. |
 | Weights | `model.backbone.model_name=convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py`, `mmdet_toolkit/sar_lora_dino/models/backbones/timm_convnext.py`, `scripts/run_sardet_smoke_cfg.sh` |
+| Code path | `configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py`, `sar_lora_dino/models/backbones/timm_convnext.py`, `scripts/run_sardet_smoke_cfg.sh` |
 | Params | Backbone frozen; neck/head trained; no LoRA modules. Full runs use seeds {0,1,2} via `--cfg-options randomness.seed=<seed>`. |
 | Metrics (must save) | For each seed: `artifacts/work_dirs/E0003_full_seed<seed>/val_metrics.json` (SARDet-100K Val COCO bbox metrics). |
 | Checks | `coco/bbox_mAP` exists; compute mean±std over seeds; record trainable params p(M). |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0003_full_seed0 --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0003_full_seed0 --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/dinov3_lp_smoke` |
-| Full cmd | `for s in 0 1 2; do bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0003_full_seed${s} --gpus 4 --seed ${s}; done` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0003_full_seed0 --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0003_full_seed0 --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/dinov3_lp_smoke` |
+| Full cmd | `for s in 0 1 2; do bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0003_full_seed${s} --gpus 4 --seed ${s}; done` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/dinov3_lp_smoke/smoke_train.log`, `artifacts/work_dirs/dinov3_lp_smoke/smoke_test.log`, `artifacts/work_dirs/E0003_full_seed<seed>/train.log`, `artifacts/work_dirs/E0003_full_seed<seed>/test_val.log` |
@@ -91,17 +91,17 @@
 | Baseline | E0002 (fc1+fc2). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc2)`, r=16, alpha=32. |
 | Metrics (must save) | `artifacts/work_dirs/E0004_full/val_metrics.json`, `artifacts/work_dirs/E0004_full/test_metrics.json` |
 | Checks | Compare `coco/bbox_mAP` vs E0002; record p(M). |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0004_full --gpus 1 --seed 0` |
-| Multi-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0004_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/dinov3_lora_fc2_smoke` |
-| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0004_full --gpus 4 --seed 0` |
+| Single-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0004_full --gpus 1 --seed 0` |
+| Multi-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0004_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/dinov3_lora_fc2_smoke` |
+| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0004_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/dinov3_lora_fc2_smoke/smoke_train.log`, `artifacts/work_dirs/dinov3_lora_fc2_smoke/smoke_test.log`, `artifacts/work_dirs/E0004_full/train.log`, `artifacts/work_dirs/E0004_full/test_val.log`, `artifacts/work_dirs/E0004_full/test_test.log` |
@@ -116,17 +116,17 @@
 | Baseline | E0002 (r=16). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc1,mlp.fc2)`, r=4, alpha=8. |
 | Metrics (must save) | `artifacts/work_dirs/E0005_full/val_metrics.json`, `artifacts/work_dirs/E0005_full/test_metrics.json` |
 | Checks | Compare `coco/bbox_mAP` vs r=8/16; record p(M). |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0005_full --gpus 1 --seed 0` |
-| Multi-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0005_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0005_smoke` |
-| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0005_full --gpus 4 --seed 0` |
+| Single-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0005_full --gpus 1 --seed 0` |
+| Multi-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0005_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0005_smoke` |
+| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0005_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0005_smoke/smoke_*.log`, `artifacts/work_dirs/E0005_full/train.log`, `artifacts/work_dirs/E0005_full/test_val.log`, `artifacts/work_dirs/E0005_full/test_test.log` |
@@ -141,17 +141,17 @@
 | Baseline | E0002 (r=16). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc1,mlp.fc2)`, r=8, alpha=16. |
 | Metrics (must save) | `artifacts/work_dirs/E0006_full/val_metrics.json`, `artifacts/work_dirs/E0006_full/test_metrics.json` |
 | Checks | Compare `coco/bbox_mAP` vs r=4/16; record p(M). |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0006_full --gpus 1 --seed 0` |
-| Multi-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0006_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0006_smoke` |
-| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0006_full --gpus 4 --seed 0` |
+| Single-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0006_full --gpus 1 --seed 0` |
+| Multi-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0006_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0006_smoke` |
+| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0006_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0006_smoke/smoke_*.log`, `artifacts/work_dirs/E0006_full/train.log`, `artifacts/work_dirs/E0006_full/test_val.log`, `artifacts/work_dirs/E0006_full/test_test.log` |
@@ -166,17 +166,17 @@
 | Baseline | E0002 (freeze-all). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc1,mlp.fc2)`, r=16, alpha=32; unfreeze stage3. |
 | Metrics (must save) | `artifacts/work_dirs/E0007_full/val_metrics.json`, `artifacts/work_dirs/E0007_full/test_metrics.json` |
 | Checks | Compare `coco/bbox_mAP` vs E0002; record p(M). |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0007_full --gpus 1 --seed 0` |
-| Multi-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0007_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0007_smoke` |
-| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0007_full --gpus 4 --seed 0` |
+| Single-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0007_full --gpus 1 --seed 0` |
+| Multi-GPU script | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0007_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0007_smoke` |
+| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0007_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0007_smoke/smoke_*.log`, `artifacts/work_dirs/E0007_full/train.log`, `artifacts/work_dirs/E0007_full/test_val.log`, `artifacts/work_dirs/E0007_full/test_test.log` |
@@ -191,17 +191,17 @@
 | Baseline | Compare against E0003 (Dinov3 linear probe) and E0002 (Dinov3-LoRA). |
 | Model | `TimmConvNeXt` (model_name=`convnext_small`) + RetinaNet. |
 | Weights | `model.backbone.model_name=convnext_small` (timm ImageNet-supervised; `pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/sup_baselines/retinanet_timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/sup_baselines/retinanet_timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py` |
 | Params | Backbone frozen; neck/head trained. Set `EVAL_SPLITS=val,test` to also write `test_metrics.json`. |
 | Metrics (must save) | `artifacts/work_dirs/E0008_full/val_metrics.json` (and `artifacts/work_dirs/E0008_full/test_metrics.json` if `EVAL_SPLITS=val,test`) |
 | Checks | Record `coco/bbox_mAP` and trainable params p(M). |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/sup_baselines/retinanet_timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0008_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/sup_baselines/retinanet_timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0008_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/sup_baselines/retinanet_timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0008_smoke` |
-| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/sup_baselines/retinanet_timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0008_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/sup_baselines/retinanet_timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0008_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/sup_baselines/retinanet_timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0008_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/sup_baselines/retinanet_timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0008_smoke` |
+| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/sup_baselines/retinanet_timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0008_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0008_smoke/smoke_*.log`, `artifacts/work_dirs/E0008_full/*.log` |
@@ -223,10 +223,10 @@
 | VRAM | TBD |
 | Time/epoch | N/A |
 | Total time | TBD |
-| Single-GPU script | `bash visualization/visualize_sardet.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --checkpoint <ckpt> --out-dir artifacts/work_dirs/E0010_vis` |
+| Single-GPU script | `bash visualization/visualize_sardet.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --checkpoint <ckpt> --out-dir artifacts/work_dirs/E0010_vis` |
 | Multi-GPU script | N/A |
-| Smoke cmd | `bash visualization/visualize_sardet.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --checkpoint artifacts/work_dirs/dinov3_lp_smoke/epoch_1.pth --out-dir artifacts/work_dirs/E0010_vis_smoke` |
-| Full cmd | `bash visualization/visualize_sardet.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --checkpoint artifacts/work_dirs/dinov3_lp_smoke/epoch_1.pth --out-dir artifacts/work_dirs/E0010_vis_smoke` |
+| Smoke cmd | `bash visualization/visualize_sardet.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --checkpoint artifacts/work_dirs/dinov3_lp_smoke/epoch_1.pth --out-dir artifacts/work_dirs/E0010_vis_smoke` |
+| Full cmd | `bash visualization/visualize_sardet.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_linear-probe_1x_sardet_bs64_amp.py --checkpoint artifacts/work_dirs/dinov3_lp_smoke/epoch_1.pth --out-dir artifacts/work_dirs/E0010_vis_smoke` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0010_vis*/**/*.log` |
@@ -248,10 +248,10 @@
 | VRAM | TBD |
 | Time/epoch | N/A |
 | Total time | TBD |
-| Single-GPU script | `bash visualization/visualize_sardet.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --checkpoint <ckpt> --out-dir artifacts/work_dirs/E0011_vis` |
+| Single-GPU script | `bash visualization/visualize_sardet.sh --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --checkpoint <ckpt> --out-dir artifacts/work_dirs/E0011_vis` |
 | Multi-GPU script | N/A |
-| Smoke cmd | `bash visualization/visualize_sardet.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --checkpoint artifacts/work_dirs/E0002_smoke/epoch_1.pth --out-dir artifacts/work_dirs/E0011_vis_smoke` |
-| Full cmd | `bash visualization/visualize_sardet.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --checkpoint artifacts/work_dirs/E0002_smoke/epoch_1.pth --out-dir artifacts/work_dirs/E0011_vis_smoke` |
+| Smoke cmd | `bash visualization/visualize_sardet.sh --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --checkpoint artifacts/work_dirs/E0002_smoke/epoch_1.pth --out-dir artifacts/work_dirs/E0011_vis_smoke` |
+| Full cmd | `bash visualization/visualize_sardet.sh --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py --checkpoint artifacts/work_dirs/E0002_smoke/epoch_1.pth --out-dir artifacts/work_dirs/E0011_vis_smoke` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0011_vis*/**/*.log` |
@@ -266,17 +266,17 @@
 | Baseline | Compare against E0003 (linear probe) and E0002 (LoRA). |
 | Model | `TimmConvNeXt` (Dinov3 weights) + RetinaNet. |
 | Weights | `model.backbone.model_name=convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_1x_sardet_bs64_amp.py`, `mmdet_toolkit/sar_lora_dino/models/backbones/timm_convnext.py` |
+| Code path | `configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_1x_sardet_bs64_amp.py`, `sar_lora_dino/models/backbones/timm_convnext.py` |
 | Params | Backbone trainable; neck/head trained; no LoRA modules. |
 | Metrics (must save) | `artifacts/work_dirs/E0019_full/val_metrics.json` |
 | Checks | Record `coco/bbox_mAP` and trainable params p(M). |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0019_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0019_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0019_smoke` |
-| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0019_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0019_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0019_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0019_smoke` |
+| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0019_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0019_smoke/smoke_*.log`, `artifacts/work_dirs/E0019_full/train.log`, `artifacts/work_dirs/E0019_full/test_val.log`, `artifacts/work_dirs/E0019_full/*/*.log` |
@@ -291,17 +291,17 @@
 | Baseline | Compare against E0008 (linear probe) and E0002 (Dinov3-LoRA). |
 | Model | `TimmConvNeXt` (ImageNet-supervised weights) + RetinaNet. |
 | Weights | `model.backbone.model_name=convnext_small` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/sup_baselines/retinanet_timm-convnext-small_full-ft_1x_sardet_bs64_amp.py`, `mmdet_toolkit/sar_lora_dino/models/backbones/timm_convnext.py` |
+| Code path | `configs/sardet100k/sup_baselines/retinanet_timm-convnext-small_full-ft_1x_sardet_bs64_amp.py`, `sar_lora_dino/models/backbones/timm_convnext.py` |
 | Params | Backbone trainable; neck/head trained; no LoRA modules. |
 | Metrics (must save) | `artifacts/work_dirs/E0020_full/val_metrics.json` |
 | Checks | Record `coco/bbox_mAP` and trainable params p(M). |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/sup_baselines/retinanet_timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0020_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/sup_baselines/retinanet_timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0020_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/sup_baselines/retinanet_timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0020_smoke` |
-| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/sup_baselines/retinanet_timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0020_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/sup_baselines/retinanet_timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0020_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/sup_baselines/retinanet_timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0020_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/sup_baselines/retinanet_timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0020_smoke` |
+| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/sup_baselines/retinanet_timm-convnext-small_full-ft_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0020_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0020_smoke/smoke_*.log`, `artifacts/work_dirs/E0020_full/*.log` |
@@ -316,17 +316,17 @@
 | Baseline | Compare against E0004 (fc2-only r=16) and E0005 (fc1+fc2 r=4). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc2)`, r=4, alpha=8. |
 | Metrics (must save) | `artifacts/work_dirs/E0012_full/val_metrics.json`, `artifacts/work_dirs/E0012_full/test_metrics.json` |
 | Checks | Record `coco/bbox_mAP` and p(M); compare vs E0004/E0005. |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0012_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0012_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0012_smoke` |
-| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0012_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0012_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0012_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0012_smoke` |
+| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0012_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0012_smoke/smoke_*.log`, `artifacts/work_dirs/E0012_full/*.log` |
@@ -341,17 +341,17 @@
 | Baseline | Compare against E0004 (fc2-only r=16) and E0006 (fc1+fc2 r=8). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc2)`, r=8, alpha=16. |
 | Metrics (must save) | `artifacts/work_dirs/E0013_full/val_metrics.json`, `artifacts/work_dirs/E0013_full/test_metrics.json` |
 | Checks | Record `coco/bbox_mAP` and p(M); compare vs E0004/E0006. |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0013_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0013_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0013_smoke` |
-| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0013_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0013_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0013_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0013_smoke` |
+| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0013_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0013_smoke/smoke_*.log`, `artifacts/work_dirs/E0013_full/*.log` |
@@ -366,17 +366,17 @@
 | Baseline | Compare against E0005 (r=4 freeze-all). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc1,mlp.fc2)`, r=4, alpha=8; `unfreeze_stages=(3,)`. |
 | Metrics (must save) | `artifacts/work_dirs/E0014_full/val_metrics.json`, `artifacts/work_dirs/E0014_full/test_metrics.json` |
 | Checks | Record `coco/bbox_mAP` and p(M); compare vs E0005. |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0014_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0014_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0014_smoke` |
-| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0014_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0014_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0014_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0014_smoke` |
+| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0014_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0014_smoke/smoke_*.log`, `artifacts/work_dirs/E0014_full/*.log` |
@@ -391,17 +391,17 @@
 | Baseline | Compare against E0006 (r=8 freeze-all). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc1,mlp.fc2)`, r=8, alpha=16; `unfreeze_stages=(3,)`. |
 | Metrics (must save) | `artifacts/work_dirs/E0015_full/val_metrics.json`, `artifacts/work_dirs/E0015_full/test_metrics.json` |
 | Checks | Record `coco/bbox_mAP` and p(M); compare vs E0006. |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0015_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0015_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0015_smoke` |
-| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0015_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0015_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0015_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0015_smoke` |
+| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc1fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0015_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0015_smoke/smoke_*.log`, `artifacts/work_dirs/E0015_full/*.log` |
@@ -416,17 +416,17 @@
 | Baseline | Compare against E0004 (fc2-only freeze-all) and E0007 (fc1+fc2 unfreeze stage3). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc2)`, r=16, alpha=32; `unfreeze_stages=(3,)`. |
 | Metrics (must save) | `artifacts/work_dirs/E0016_full/val_metrics.json`, `artifacts/work_dirs/E0016_full/test_metrics.json` |
 | Checks | Record `coco/bbox_mAP` and p(M); compare vs E0004/E0007. |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0016_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0016_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0016_smoke` |
-| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0016_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0016_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0016_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0016_smoke` |
+| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0016_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0016_smoke/smoke_*.log`, `artifacts/work_dirs/E0016_full/*.log` |
@@ -441,17 +441,17 @@
 | Baseline | Compare against E0012 (fc2-only r=4 freeze-all) and E0014 (fc1+fc2 r=4 unfreeze stage3). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc2)`, r=4, alpha=8; `unfreeze_stages=(3,)`. |
 | Metrics (must save) | `artifacts/work_dirs/E0017_full/val_metrics.json`, `artifacts/work_dirs/E0017_full/test_metrics.json` |
 | Checks | Record `coco/bbox_mAP` and p(M); compare vs E0012/E0014. |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0017_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0017_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0017_smoke` |
-| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0017_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0017_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0017_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0017_smoke` |
+| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r4_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0017_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0017_smoke/smoke_*.log`, `artifacts/work_dirs/E0017_full/*.log` |
@@ -466,17 +466,17 @@
 | Baseline | Compare against E0013 (fc2-only r=8 freeze-all) and E0015 (fc1+fc2 r=8 unfreeze stage3). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc2)`, r=8, alpha=16; `unfreeze_stages=(3,)`. |
 | Metrics (must save) | `artifacts/work_dirs/E0018_full/val_metrics.json`, `artifacts/work_dirs/E0018_full/test_metrics.json` |
 | Checks | Record `coco/bbox_mAP` and p(M); compare vs E0013/E0015. |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0018_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0018_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0018_smoke` |
-| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0018_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0018_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0018_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0018_smoke` |
+| Full cmd | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r8_fc2_unfreeze-stage3_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0018_full --gpus 4 --seed 0` |
 | Smoke | [x] |
 | Full | [x] |
 | Logs | `artifacts/work_dirs/E0018_smoke/smoke_*.log`, `artifacts/work_dirs/E0018_full/*.log` |
@@ -491,17 +491,17 @@
 | Baseline | Compare against E0002 (fc1+fc2) and E0004 (fc2-only). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=True`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc1)`, r=16, alpha=32; backbone frozen; neck/head trained. |
 | Metrics (must save) | `artifacts/work_dirs/E0021_smoke/smoke_metrics.json`, `artifacts/work_dirs/E0021_full/val_metrics.json`, `artifacts/work_dirs/E0021_full/test_metrics.json` |
 | Checks | Smoke/full commands exit 0; metrics JSON exists and includes `coco/bbox_mAP`. |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0021_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0021_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0021_smoke` |
-| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0021_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0021_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0021_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0021_smoke` |
+| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0021_full --gpus 4 --seed 0` |
 | Smoke | [ ] |
 | Full | [ ] |
 | Logs | `artifacts/work_dirs/E0021_smoke/smoke_*.log`, `artifacts/work_dirs/E0021_full/*.log` |
@@ -516,17 +516,17 @@
 | Baseline | Compare against E0002 (pretrained=True) and E0025 (no LoRA, no pretrain). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=False`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_nopretrain_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_nopretrain_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc1,mlp.fc2)`, r=16, alpha=32; backbone frozen; neck/head trained; `pretrained=False`. |
 | Metrics (must save) | `artifacts/work_dirs/E0022_smoke/smoke_metrics.json`, `artifacts/work_dirs/E0022_full/val_metrics.json`, `artifacts/work_dirs/E0022_full/test_metrics.json` |
 | Checks | Smoke/full commands exit 0; metrics JSON exists. |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0022_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0022_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0022_smoke` |
-| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0022_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0022_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0022_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0022_smoke` |
+| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0022_full --gpus 4 --seed 0` |
 | Smoke | [ ] |
 | Full | [ ] |
 | Logs | `artifacts/work_dirs/E0022_smoke/smoke_*.log`, `artifacts/work_dirs/E0022_full/*.log` |
@@ -541,17 +541,17 @@
 | Baseline | Compare against E0004 (pretrained=True) and E0022 (fc1+fc2 no pretrain). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=False`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_nopretrain_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_nopretrain_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc2)`, r=16, alpha=32; backbone frozen; `pretrained=False`. |
 | Metrics (must save) | `artifacts/work_dirs/E0023_smoke/smoke_metrics.json`, `artifacts/work_dirs/E0023_full/val_metrics.json`, `artifacts/work_dirs/E0023_full/test_metrics.json` |
 | Checks | Smoke/full commands exit 0; metrics JSON exists. |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0023_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0023_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0023_smoke` |
-| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0023_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0023_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0023_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0023_smoke` |
+| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc2_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0023_full --gpus 4 --seed 0` |
 | Smoke | [ ] |
 | Full | [ ] |
 | Logs | `artifacts/work_dirs/E0023_smoke/smoke_*.log`, `artifacts/work_dirs/E0023_full/*.log` |
@@ -566,17 +566,17 @@
 | Baseline | Compare against E0021 (pretrained=True fc1-only) and E0022/E0023 (no pretrain). |
 | Model | `Dinov3TimmConvNeXtLoRA` + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=False`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_nopretrain_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_nopretrain_1x_sardet_bs64_amp.py` |
 | Params | target=`(mlp.fc1)`, r=16, alpha=32; backbone frozen; `pretrained=False`. |
 | Metrics (must save) | `artifacts/work_dirs/E0024_smoke/smoke_metrics.json`, `artifacts/work_dirs/E0024_full/val_metrics.json`, `artifacts/work_dirs/E0024_full/test_metrics.json` |
 | Checks | Smoke/full commands exit 0; metrics JSON exists. |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0024_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0024_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0024_smoke` |
-| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0024_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0024_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0024_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0024_smoke` |
+| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_lora_ablation/retinanet_dinov3-timm-convnext-small_lora-r16_fc1_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0024_full --gpus 4 --seed 0` |
 | Smoke | [ ] |
 | Full | [ ] |
 | Logs | `artifacts/work_dirs/E0024_smoke/smoke_*.log`, `artifacts/work_dirs/E0024_full/*.log` |
@@ -591,17 +591,17 @@
 | Baseline | Compare against E0019 (pretrained=True full-ft) and E0022 (LoRA no pretrain). |
 | Model | `TimmConvNeXt` (Dinov3 arch) + RetinaNet. |
 | Weights | `convnext_small.dinov3_lvd1689m` (`pretrained=False`). |
-| Code path | `mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_nopretrain_1x_sardet_bs64_amp.py` |
+| Code path | `configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_nopretrain_1x_sardet_bs64_amp.py` |
 | Params | Backbone trainable; neck/head trained; `pretrained=False`. |
 | Metrics (must save) | `artifacts/work_dirs/E0025_smoke/smoke_metrics.json`, `artifacts/work_dirs/E0025_full/val_metrics.json`, `artifacts/work_dirs/E0025_full/test_metrics.json` |
 | Checks | Smoke/full commands exit 0; metrics JSON exists. |
 | VRAM | TBD |
 | Time/epoch | TBD |
 | Total time | TBD |
-| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0025_full --gpus 1 --seed 0` |
-| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0025_full --gpus 4 --seed 0` |
-| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0025_smoke` |
-| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config mmdet_toolkit/local_configs/SARDet/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0025_full --gpus 4 --seed 0` |
+| Single-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0025_full --gpus 1 --seed 0` |
+| Multi-GPU script | `bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0025_full --gpus 4 --seed 0` |
+| Smoke cmd | `bash scripts/run_sardet_smoke_cfg.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0025_smoke` |
+| Full cmd | `EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh --config configs/sardet100k/dinov3_baselines/retinanet_dinov3-timm-convnext-small_full-ft_nopretrain_1x_sardet_bs64_amp.py --work-dir artifacts/work_dirs/E0025_full --gpus 4 --seed 0` |
 | Smoke | [ ] |
 | Full | [ ] |
 | Logs | `artifacts/work_dirs/E0025_smoke/smoke_*.log`, `artifacts/work_dirs/E0025_full/*.log` |

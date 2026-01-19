@@ -43,13 +43,13 @@ Recommended patterns:
 - VR export:
   - `artifacts/visualizations/VR/<name>/<split>/` (produces `metrics.json`, `predictions.pkl`, and `vis/`)
 
-## Config naming (`mmdet_toolkit/local_configs/`)
+## Config naming (`configs/`)
 
 Configs are grouped by dataset/task, then named to encode key choices.
 
 Example:
 
-- `mmdet_toolkit/local_configs/SARDet/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py`
+- `configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py`
 
 Suggested schema:
 

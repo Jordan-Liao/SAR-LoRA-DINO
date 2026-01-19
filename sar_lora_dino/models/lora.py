@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from typing import Sequence
 
+import torch
 from torch import nn
 
 
@@ -30,7 +32,28 @@ class LoRALinear(nn.Module):
         if self.base.bias is not None:
             self.base.bias.requires_grad_(False)
 
+        self.merged = False
+
+    def _delta_weight(self) -> torch.Tensor:
+        return self.lora_B.weight @ self.lora_A.weight
+
+    @torch.no_grad()
+    def merge(self) -> None:
+        if self.merged:
+            return
+        self.base.weight.add_(self._delta_weight() * self.scaling)
+        self.merged = True
+
+    @torch.no_grad()
+    def unmerge(self) -> None:
+        if not self.merged:
+            return
+        self.base.weight.sub_(self._delta_weight() * self.scaling)
+        self.merged = False
+
     def forward(self, x):
+        if self.merged:
+            return self.base(x)
         return self.base(x) + self.lora_B(self.lora_A(self.dropout(x))) * self.scaling
 
 
@@ -78,7 +101,30 @@ class LoRAConv2d(nn.Module):
         if self.base.bias is not None:
             self.base.bias.requires_grad_(False)
 
+        self.merged = False
+
+    def _delta_weight(self) -> torch.Tensor:
+        a = self.lora_A.weight.squeeze(-1).squeeze(-1)  # (r, in)
+        b = self.lora_B.weight  # (out, r, kH, kW)
+        return torch.einsum("orhw,ri->oihw", b, a)
+
+    @torch.no_grad()
+    def merge(self) -> None:
+        if self.merged:
+            return
+        self.base.weight.add_(self._delta_weight() * self.scaling)
+        self.merged = True
+
+    @torch.no_grad()
+    def unmerge(self) -> None:
+        if not self.merged:
+            return
+        self.base.weight.sub_(self._delta_weight() * self.scaling)
+        self.merged = False
+
     def forward(self, x):
+        if self.merged:
+            return self.base(x)
         return self.base(x) + self.lora_B(self.lora_A(self.dropout(x))) * self.scaling
 
 
@@ -136,3 +182,63 @@ def inject_lora_conv2d(
         parent._modules[key] = LoRAConv2d(module, r=r, alpha=alpha, dropout=dropout)
         replaced += 1
     return replaced
+
+
+def lora_state_dict(model: nn.Module) -> dict[str, torch.Tensor]:
+    """Return a LoRA-only state_dict (LoRA adapter weights only).
+
+    This is useful for sharing lightweight adapters without bundling large base model checkpoints.
+    """
+
+    sd = model.state_dict()
+    return {k: v for k, v in sd.items() if ".lora_A." in k or ".lora_B." in k}
+
+
+def load_lora_state_dict(model: nn.Module, state_dict: Mapping[str, torch.Tensor], strict: bool = False) -> None:
+    """Load a LoRA-only state_dict into a model that already has LoRA modules injected."""
+
+    model.load_state_dict(dict(state_dict), strict=strict)
+
+
+def mark_only_lora_as_trainable(model: nn.Module, train_bias: bool = False) -> int:
+    """Freeze all parameters except LoRA adapters (and optionally base biases)."""
+
+    for p in model.parameters():
+        p.requires_grad_(False)
+
+    for module in model.modules():
+        if isinstance(module, (LoRALinear, LoRAConv2d)):
+            for p in module.lora_A.parameters():
+                p.requires_grad_(True)
+            for p in module.lora_B.parameters():
+                p.requires_grad_(True)
+            if train_bias and getattr(module.base, "bias", None) is not None:
+                module.base.bias.requires_grad_(True)
+
+    return count_parameters(model, trainable_only=True)
+
+
+@torch.no_grad()
+def merge_lora(model: nn.Module) -> int:
+    """In-place merge LoRA weights into base weights (inference convenience)."""
+
+    merged = 0
+    for module in model.modules():
+        if isinstance(module, (LoRALinear, LoRAConv2d)):
+            if not module.merged:
+                module.merge()
+                merged += 1
+    return merged
+
+
+@torch.no_grad()
+def unmerge_lora(model: nn.Module) -> int:
+    """Undo a previous merge_lora() call."""
+
+    unmerged = 0
+    for module in model.modules():
+        if isinstance(module, (LoRALinear, LoRAConv2d)):
+            if module.merged:
+                module.unmerge()
+                unmerged += 1
+    return unmerged

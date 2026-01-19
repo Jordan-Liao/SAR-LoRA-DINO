@@ -1,14 +1,21 @@
 # SAR-LoRA-DINO
 
-This repo focuses on **DINOv3 (ConvNeXt) + LoRA** for SAR object detection on the **SARDet-100K** benchmark, built on an MMDetection 3.x codebase (`mmdet_toolkit/`).
+This repo focuses on **DINOv3 (ConvNeXt) + LoRA** for SAR object detection on the **SARDet-100K** benchmark, built on **MMDetection 3.x** (MMEngine/MMCV).
 
 This repo includes runnable configs/scripts, plus an experiment ledger and result tables under `artifacts/`.
 
 ## Quick Start
 
 - Install + dataset setup + runnable commands: `docs/GETTING_STARTED.md`
+- Installation (standalone): `docs/INSTALLATION.md`
+- Dataset notes: `docs/DATASET_SARDET100K.md`
 - Repo structure overview: `docs/PROJECT_STRUCTURE.md`
 - Conventions (naming / env vars): `docs/CONVENTIONS.md`
+- Configs explained: `docs/CONFIGS_EXPLAINED.md`
+- LoRA design & merge/unmerge: `docs/LORA_DESIGN.md`
+- Training / evaluation: `docs/TRAINING.md`, `docs/EVALUATION.md`
+- Model Zoo (configs + metrics pointers): `docs/MODEL_ZOO.md`
+- Export / visualization: `docs/EXPORT.md`
 - Artifacts & Releases (what goes in git vs Release): `docs/ARTIFACTS_AND_RELEASES.md`
 - Release checklist (what’s still missing): `docs/RELEASE_CHECKLIST.md`
 
@@ -55,6 +62,21 @@ This repo does not vendor large checkpoints.
 This repository is mixed-licensed:
 
 - `LICENSE`: CC BY-NC 4.0 (repository-level assets by default)
-- `mmdet_toolkit/LICENSE`: Apache 2.0 (MMDetection-based code)
+- `LICENSES/Apache-2.0.txt`: Apache 2.0 (MMDetection-style configs; see `THIRD_PARTY_NOTICES.md`)
 
 See `THIRD_PARTY_NOTICES.md` for attributions.
+
+## Citation
+
+If you use this repo, see `CITATION.bib` / `CITATION.cff`.
+
+If you use the SARDet-100K dataset, please also cite:
+
+```bibtex
+@inproceedings{li2024sardet100k,
+  title={SARDet-100K: Towards Open-Source Benchmark and ToolKit for Large-Scale SAR Object Detection},
+  author={Yuxuan Li and Xiang Li and Weijie Li and Qibin Hou and Li Liu and Ming-Ming Cheng and Jian Yang},
+  year={2024},
+  booktitle={The Thirty-eighth Annual Conference on Neural Information Processing Systems (NeurIPS)},
+}
+```

@@ -120,7 +120,7 @@ conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/make_coco_subset.py" \
   --num-images "${VAL_NUM_IMAGES}" \
   --seed "${SEED}"
 
-conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/mmdet_train.py" \
+conda run -n "${ENV_NAME}" python "${REPO_ROOT}/tools/train.py" \
   "${CONFIG_ABS}" \
   --work-dir "${WORK_DIR_ABS}" \
   --cfg-options \
@@ -144,7 +144,7 @@ if [[ -z "${CKPT}" || ! -f "${CKPT}" ]]; then
   exit 1
 fi
 
-conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/mmdet_test_to_json.py" \
+conda run -n "${ENV_NAME}" python "${REPO_ROOT}/tools/test_to_json.py" \
   --config "${CONFIG_ABS}" \
   --checkpoint "${CKPT}" \
   --work-dir "${WORK_DIR_ABS}" \

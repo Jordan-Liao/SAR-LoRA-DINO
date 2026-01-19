@@ -1,8 +1,8 @@
 _base_ = [
-    "../../../configs/_base_/models/retinanet_r50_fpn.py",
-    "../../../configs/_base_/datasets/SARDet_100k.py",
-    "../../../configs/_base_/schedules/schedule_1x.py",
-    "../../../configs/_base_/default_runtime.py",
+    "../../_base_/models/retinanet_r50_fpn.py",
+    "../../_base_/datasets/SARDet_100k.py",
+    "../../_base_/schedules/schedule_1x.py",
+    "../../_base_/runtime/default_runtime.py",
 ]
 
 num_classes = 6
@@ -21,7 +21,7 @@ model = dict(
         model_name="convnext_small",
         pretrained=True,
         out_indices=(0, 1, 2, 3),
-        freeze_backbone=False,
+        freeze_backbone=True,
     ),
     neck=dict(
         in_channels=[96, 192, 384, 768],

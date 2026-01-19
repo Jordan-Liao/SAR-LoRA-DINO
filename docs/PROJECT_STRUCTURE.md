@@ -4,8 +4,9 @@ This repo is organized as a paper-ready code release:
 
 ## Top-level
 
-- `mmdet_toolkit/`: core codebase (MMDetection-style) + the `sar_lora_dino` python package.
-- `mmdet_toolkit/local_configs/`: runnable experiment configs grouped by dataset/task.
+- `sar_lora_dino/`: core python package (LoRA utilities + DINOv3/ConvNeXt MMDet backbones).
+- `configs/`: runnable MMDetection configs (base templates + SARDet-100K experiments).
+- `tools/`: stable CLI entrypoints (train/test/stats).
 - `scripts/`: reproducibility helpers (smoke/full runners, exporting, analysis).
 - `visualization/`: qualitative export tools (VR / painted detections / Grad-CAM) and packaging helpers.
 - `docs/`: documentation (setup, conventions, FAQ, project notes).
@@ -14,10 +15,13 @@ This repo is organized as a paper-ready code release:
 
 ## Key files
 
-- Dataset config: `mmdet_toolkit/configs/_base_/datasets/SARDet_100k.py`
+- Dataset config: `configs/_base_/datasets/SARDet_100k.py`
   - Uses `SARDET100K_ROOT` (defaults to `<repo>/data/SARDet_100K`).
 - Main runner scripts:
   - `scripts/run_sardet_smoke.sh`
   - `scripts/run_sardet_smoke_cfg.sh`
   - `scripts/run_sardet_full_cfg.sh`
+- Core CLI tools:
+  - `tools/train.py`
+  - `tools/test_to_json.py`
 - Experiment ledger: `artifacts/experiments/experiment.md`

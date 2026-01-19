@@ -78,12 +78,12 @@ def _find_first_config_path(text: str) -> str:
     if not text:
         return ""
 
-    # Prefer local configs
-    for m in re.finditer(r"(mmdet_toolkit/local_configs/[A-Za-z0-9_./-]+\.py)", text):
+    # Prefer repo configs
+    for m in re.finditer(r"(configs/[A-Za-z0-9_./-]+\.py)", text):
         return m.group(1)
 
-    # Fallback: any .py under mmdet_toolkit/
-    for m in re.finditer(r"(mmdet_toolkit/[A-Za-z0-9_./-]+\.py)", text):
+    # Fallback: any .py under configs/
+    for m in re.finditer(r"(configs/[A-Za-z0-9_./-]+\.py)", text):
         return m.group(1)
 
     return ""

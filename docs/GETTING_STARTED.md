@@ -14,9 +14,11 @@ mim install "mmengine==0.8.4"
 mim install "mmcv==2.0.1"
 mim install "mmdet==3.1.0"
 
-pip install -r mmdet_toolkit/requirements.txt
-pip install -v -e mmdet_toolkit
+pip install -r requirements.txt
+pip install -e .
 ```
+
+Optional: you can also run `ENV_NAME=sar_lora_dino bash scripts/setup_env.sh` as a convenience wrapper.
 
 Sanity check:
 
@@ -51,7 +53,7 @@ bash scripts/run_sardet_smoke.sh
 
 ```bash
 bash scripts/run_sardet_smoke_cfg.sh \
-  --config mmdet_toolkit/local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py \
+  --config configs/sardet100k/smoke/retinanet_r50_sardet_smoke.py \
   --work-dir artifacts/work_dirs/sardet_smoke_cfg_test
 ```
 
@@ -59,7 +61,7 @@ bash scripts/run_sardet_smoke_cfg.sh \
 
 ```bash
 bash scripts/run_sardet_full_cfg.sh \
-  --config mmdet_toolkit/local_configs/SARDet/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py \
+  --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py \
   --work-dir artifacts/work_dirs/E0002_full_seed0 \
   --gpus 4 \
   --seed 0
@@ -73,7 +75,7 @@ Set `EVAL_SPLITS=val,test` if you also want test evaluation.
 OUT_ROOT=artifacts/visualizations/VR SPLITS=val,test ENV_NAME=sar_lora_dino \
   bash visualization/export_sardet_vr.sh \
     --name E0002_lora \
-    --config mmdet_toolkit/local_configs/SARDet/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py \
+    --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py \
     --checkpoint artifacts/work_dirs/E0002_full_seed0/best_coco_bbox_mAP_epoch_12.pth
 ```
 

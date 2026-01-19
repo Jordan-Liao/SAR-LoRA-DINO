@@ -41,7 +41,7 @@ WORK_DIR="${REPO_ROOT}/artifacts/work_dirs/sardet_smoke"
 SUBSET_DIR="${WORK_DIR}/subsets"
 TRAIN_SUBSET_JSON="${SUBSET_DIR}/train_200.json"
 VAL_SUBSET_JSON="${SUBSET_DIR}/val_50.json"
-CONFIG="${REPO_ROOT}/mmdet_toolkit/local_configs/SARDet/smoke/retinanet_r50_sardet_smoke.py"
+CONFIG="${REPO_ROOT}/configs/sardet100k/smoke/retinanet_r50_sardet_smoke.py"
 
 mkdir -p "${WORK_DIR}" "${SUBSET_DIR}"
 
@@ -59,7 +59,7 @@ conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/make_coco_subset.py" \
   --num-images 50 \
   --seed 0
 
-conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/mmdet_train.py" \
+conda run -n "${ENV_NAME}" python "${REPO_ROOT}/tools/train.py" \
   "${CONFIG}" \
   --work-dir "${WORK_DIR}" 2>&1 | tee "${WORK_DIR}/smoke_train.log"
 
@@ -75,7 +75,7 @@ if [[ -z "${CKPT}" || ! -f "${CKPT}" ]]; then
   exit 1
 fi
 
-conda run -n "${ENV_NAME}" python "${REPO_ROOT}/scripts/mmdet_test_to_json.py" \
+conda run -n "${ENV_NAME}" python "${REPO_ROOT}/tools/test_to_json.py" \
   --config "${CONFIG}" \
   --checkpoint "${CKPT}" \
   --work-dir "${WORK_DIR}" \

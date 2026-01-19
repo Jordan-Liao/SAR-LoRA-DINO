@@ -2,10 +2,10 @@ import os
 import os.path as osp
 
 _base_ = [
-    "../../../configs/_base_/models/retinanet_r50_fpn.py",
-    "../../../configs/_base_/datasets/SARDet_100k.py",
-    "../../../configs/_base_/schedules/schedule_1x.py",
-    "../../../configs/_base_/default_runtime.py",
+    "../../_base_/models/retinanet_r50_fpn.py",
+    "../../_base_/datasets/SARDet_100k.py",
+    "../../_base_/schedules/schedule_1x.py",
+    "../../_base_/runtime/default_runtime.py",
 ]
 
 num_classes = 6
