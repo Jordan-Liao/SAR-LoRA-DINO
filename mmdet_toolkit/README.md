@@ -70,10 +70,6 @@ conda run -n sar_lora_dino python ../scripts/mmdet_test_to_json.py --config loca
 Configs are grouped under `local_configs/` (e.g. `local_configs/SARDet/`).
 For experiment tables and exact commands, see `../artifacts/experiments/experiment.md`.
 
-## Citation
-
-See `../CITATION.bib` / `../CITATION.cff`.
-
 ## License
 
 Apache 2.0 — see `LICENSE`.

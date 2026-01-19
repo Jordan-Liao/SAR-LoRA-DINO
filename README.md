@@ -50,21 +50,6 @@ This repo does not vendor large checkpoints.
   - `artifacts/experiments/experiment.md`
   - `artifacts/experiments/experiment_results.tsv`
 
-## Citation
-
-If you use this repo, see `CITATION.bib` / `CITATION.cff`.
-
-If you use the SARDet-100K dataset, please also cite:
-
-```bibtex
-@inproceedings{li2024sardet100k,
-  title={SARDet-100K: Towards Open-Source Benchmark and ToolKit for Large-Scale SAR Object Detection},
-  author={Yuxuan Li and Xiang Li and Weijie Li and Qibin Hou and Li Liu and Ming-Ming Cheng and Jian Yang},
-  year={2024},
-  booktitle={The Thirty-eighth Annual Conference on Neural Information Processing Systems (NeurIPS)},
-}
-```
-
 ## License
 
 This repository is mixed-licensed:
