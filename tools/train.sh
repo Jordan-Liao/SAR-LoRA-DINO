@@ -21,5 +21,11 @@ fi
 CONFIG="$1"
 shift
 
-conda run -n "${ENV_NAME}" python tools/train.py "${CONFIG}" "$@"
+if [[ ! -f "${CONFIG}" ]]; then
+  echo "Config not found: ${CONFIG}" >&2
+  exit 1
+fi
 
+bash scripts/verify_env.sh
+
+conda run -n "${ENV_NAME}" python tools/train.py "${CONFIG}" "$@"

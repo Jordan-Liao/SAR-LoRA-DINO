@@ -34,6 +34,7 @@ Download SARDet-100K and point the code to it by either:
   - `export SARDET100K_ROOT=/path/to/SARDet_100K`
 - Or symlinking into the repo:
   - `ln -s /path/to/SARDet_100K data/sardet100k`
+  - or `bash scripts/setup_sardet_dataset.sh`
 
 Expected layout:
 

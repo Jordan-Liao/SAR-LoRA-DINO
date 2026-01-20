@@ -18,5 +18,29 @@ if [[ $# -lt 1 ]]; then
   exit 1
 fi
 
-conda run -n "${ENV_NAME}" python tools/test_to_json.py "$@"
+bash scripts/verify_env.sh
 
+ARGS=("$@")
+CONFIG=""
+CHECKPOINT=""
+for ((i=0; i<${#ARGS[@]}; i++)); do
+  case "${ARGS[i]}" in
+    --config)
+      CONFIG="${ARGS[i+1]:-}"
+      ;;
+    --checkpoint)
+      CHECKPOINT="${ARGS[i+1]:-}"
+      ;;
+  esac
+done
+
+if [[ -n "${CONFIG}" && ! -f "${CONFIG}" ]]; then
+  echo "Config not found: ${CONFIG}" >&2
+  exit 1
+fi
+if [[ -n "${CHECKPOINT}" && ! -f "${CHECKPOINT}" ]]; then
+  echo "Checkpoint not found: ${CHECKPOINT}" >&2
+  exit 1
+fi
+
+conda run -n "${ENV_NAME}" python tools/test_to_json.py "${ARGS[@]}"

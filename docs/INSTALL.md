@@ -16,7 +16,20 @@ SAR-LoRA-DINO is an add-on package for **MMDetection 3.x** (MMEngine/MMCV).
 ENV_NAME=sar_lora_dino bash scripts/setup_env.sh
 ```
 
-## Option B: manual install
+The script is idempotent: re-running it reuses the env and re-installs the stack.
+You can override versions via env vars (see `scripts/setup_env.sh`).
+
+## Option B: conda env create (environment.yml)
+
+This repo includes an example `environment.yml` (CUDA 11.8 + PyTorch 2.0.1).
+Adjust versions to match your system if needed.
+
+```bash
+conda env create -f environment.yml
+conda activate sar_lora_dino
+```
+
+## Option C: manual install
 
 ```bash
 conda create -n sar_lora_dino python=3.8 -y
@@ -40,4 +53,3 @@ pip install -e .
 ENV_NAME=sar_lora_dino bash scripts/verify_env.sh
 python -c "import sar_lora_dino; print(sar_lora_dino.__version__)"
 ```
-
