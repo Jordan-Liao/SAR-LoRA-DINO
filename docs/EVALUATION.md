@@ -13,7 +13,7 @@ Use `scripts/run_sardet_full_cfg.sh` which trains and then evaluates, writing:
 
 ```bash
 conda run -n sar_lora_dino python tools/test_to_json.py \
-  --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py \
+  --config configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc1fc2_sardet100k.py \
   --checkpoint /path/to/checkpoint.pth \
   --work-dir artifacts/work_dirs/eval_only \
   --out-json artifacts/work_dirs/eval_only/val_metrics.json \

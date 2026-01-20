@@ -18,7 +18,7 @@ export SARDET100K_ROOT=/path/to/SARDet_100K
 or symlink:
 
 ```bash
-ln -s /path/to/SARDet_100K data/SARDet_100K
+ln -s /path/to/SARDet_100K data/sardet100k
 ```
 
 ## CUDA OOM
@@ -33,4 +33,3 @@ Try one or more of:
 
 Some hosts have global NCCL env vars that break distributed training.
 `scripts/run_sardet_full_cfg.sh` already unsets common NCCL variables before launch.
-

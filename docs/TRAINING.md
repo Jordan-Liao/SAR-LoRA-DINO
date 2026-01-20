@@ -14,7 +14,7 @@ This runs a tiny subset and writes `artifacts/work_dirs/sardet_smoke/smoke_metri
 
 ```bash
 bash scripts/run_sardet_smoke_cfg.sh \
-  --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py \
+  --config configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc1fc2_sardet100k.py \
   --work-dir artifacts/work_dirs/E0002_smoke
 ```
 
@@ -22,7 +22,7 @@ bash scripts/run_sardet_smoke_cfg.sh \
 
 ```bash
 EVAL_SPLITS=val,test bash scripts/run_sardet_full_cfg.sh \
-  --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py \
+  --config configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc1fc2_sardet100k.py \
   --work-dir artifacts/work_dirs/E0002_full_seed0 \
   --gpus 4 \
   --seed 0
@@ -36,4 +36,3 @@ Outputs:
 ## Seeds / multi-run
 
 See the runnable “Full cmd” blocks in `artifacts/experiments/experiment.md` for the exact loops used to produce tables.
-

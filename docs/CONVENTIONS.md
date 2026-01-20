@@ -6,7 +6,7 @@ This repo follows a few conventions to keep experiments reproducible and paper-w
 
 - `ENV_NAME` (default: `sar_lora_dino`)
   - Conda env name used by `scripts/*.sh`.
-- `SARDET100K_ROOT` (default: `<repo>/data/SARDet_100K`)
+- `SARDET100K_ROOT` (default: `<repo>/data/sardet100k`)
   - Dataset root containing `Annotations/` and `JPEGImages/`.
 - `CUDA_VISIBLE_DEVICES`
   - If unset, runner scripts try to auto-pick the GPU(s) with most free memory.
@@ -49,7 +49,7 @@ Configs are grouped by dataset/task, then named to encode key choices.
 
 Example:
 
-- `configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py`
+- `configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc1fc2_sardet100k.py`
 
 Suggested schema:
 

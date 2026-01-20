@@ -26,12 +26,11 @@ export SARDET100K_ROOT=/path/to/SARDet_100K
 Option B: symlink into this repo (recommended for local runs):
 
 ```bash
-ln -s /path/to/SARDet_100K data/SARDet_100K
+ln -s /path/to/SARDet_100K data/sardet100k
 # or:
 bash scripts/setup_sardet_dataset.sh
 ```
 
 Notes:
-- `configs/_base_/datasets/SARDet_100k.py` reads `SARDET100K_ROOT` and defaults to `data/SARDet_100K`.
+- `configs/_base_/datasets/sardet100k.py` reads `SARDET100K_ROOT` and defaults to `data/sardet100k`.
 - The dataset itself is not vendored in git (see `.gitignore`).
-

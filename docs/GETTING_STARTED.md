@@ -33,7 +33,7 @@ Download SARDet-100K and point the code to it by either:
 - Setting env var:
   - `export SARDET100K_ROOT=/path/to/SARDet_100K`
 - Or symlinking into the repo:
-  - `ln -s /path/to/SARDet_100K data/SARDet_100K`
+  - `ln -s /path/to/SARDet_100K data/sardet100k`
 
 Expected layout:
 
@@ -61,7 +61,7 @@ bash scripts/run_sardet_smoke_cfg.sh \
 
 ```bash
 bash scripts/run_sardet_full_cfg.sh \
-  --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py \
+  --config configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc1fc2_sardet100k.py \
   --work-dir artifacts/work_dirs/E0002_full_seed0 \
   --gpus 4 \
   --seed 0
@@ -75,7 +75,7 @@ Set `EVAL_SPLITS=val,test` if you also want test evaluation.
 OUT_ROOT=artifacts/visualizations/VR SPLITS=val,test ENV_NAME=sar_lora_dino \
   bash visualization/export_sardet_vr.sh \
     --name E0002_lora \
-    --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py \
+    --config configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc1fc2_sardet100k.py \
     --checkpoint artifacts/work_dirs/E0002_full_seed0/best_coco_bbox_mAP_epoch_12.pth
 ```
 

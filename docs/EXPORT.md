@@ -6,7 +6,7 @@ Visualization code lives under `visualization/` and writes outputs under `artifa
 
 ```bash
 bash visualization/visualize_sardet.sh \
-  --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py \
+  --config configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc1fc2_sardet100k.py \
   --checkpoint /path/to/checkpoint.pth \
   --out-dir artifacts/visualizations/painted
 ```
@@ -17,11 +17,10 @@ bash visualization/visualize_sardet.sh \
 OUT_ROOT=artifacts/visualizations/VR SPLITS=val,test ENV_NAME=sar_lora_dino \
   bash visualization/export_sardet_vr.sh \
     --name E0002_lora \
-    --config configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py \
+    --config configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc1fc2_sardet100k.py \
     --checkpoint /path/to/checkpoint.pth
 ```
 
 ## Grad-CAM (sample500 bundle)
 
 See `visualization/export_gradcam_sample500_bundle.py` and `docs/RESULTS_BUNDLE.md`.
-

@@ -1,0 +1,10 @@
+name: sar_lora_dino
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pip
+  - pip:
+      - -r requirements.txt
+      - -e .
+

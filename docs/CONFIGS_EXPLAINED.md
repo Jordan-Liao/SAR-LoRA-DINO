@@ -5,10 +5,13 @@ All runnable MMDetection configs live under `configs/`.
 ## Layout
 
 - `configs/_base_/`: MMDetection-style base templates (Apache-2.0; see `THIRD_PARTY_NOTICES.md`).
-- `configs/sardet100k/`: SARDet-100K experiment configs grouped by intent.
+- `configs/sar_lora_dino/`: paper-facing configs (clean, stable names).
+- `configs/sardet100k/`: expanded experiment configs used by the internal ledger (ablations, smoke helpers, etc.).
 
 ## SARDet-100K config groups
 
+- `configs/sar_lora_dino/`
+  - Main configs used by the paper (baselines + LoRA variants).
 - `configs/sardet100k/smoke/`
   - Small subset smoke tests (fast end-to-end validation).
 - `configs/sardet100k/dinov3_baselines/`
@@ -34,7 +37,7 @@ Runner scripts forward MMEngine overrides via `--cfg-options`:
 
 ```bash
 conda run -n sar_lora_dino python tools/train.py \
-  configs/sardet100k/dinov3_lora/retinanet_dinov3-timm-convnext-small_lora-r16_1x_sardet_bs64_amp.py \
+  configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc1fc2_sardet100k.py \
   --work-dir artifacts/work_dirs/tmp_run \
   --cfg-options randomness.seed=0 train_cfg.max_epochs=1
 ```

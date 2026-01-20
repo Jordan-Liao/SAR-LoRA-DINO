@@ -1,8 +1,8 @@
 _base_ = [
     '../../_base_/models/retinanet_r50_fpn.py',
-    '../../_base_/datasets/SARDet_100k.py',
-    '../../_base_/schedules/schedule_1x.py',
-    '../../_base_/runtime/default_runtime.py',
+    '../../_base_/datasets/sardet100k.py',
+    '../../_base_/schedules/1x.py',
+    '../../_base_/default_runtime.py',
 ]
 
 num_classes = 6

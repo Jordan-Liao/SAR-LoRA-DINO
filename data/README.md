@@ -11,14 +11,13 @@ export SARDET100K_ROOT=/path/to/SARDet_100K
 or symlink into this directory:
 
 ```bash
-ln -s /path/to/SARDet_100K data/SARDet_100K
+ln -s /path/to/SARDet_100K data/sardet100k
 ```
 
 Expected layout:
 
 ```
-data/SARDet_100K/
+data/sardet100k/
   Annotations/{train,val,test}.json
   JPEGImages/{train,val,test}/
 ```
-

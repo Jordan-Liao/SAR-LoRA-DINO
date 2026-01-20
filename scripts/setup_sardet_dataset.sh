@@ -5,6 +5,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${REPO_ROOT}"
 
 DATA_LINK="${REPO_ROOT}/data/SARDet_100K"
+ALT_DATA_LINK="${REPO_ROOT}/data/sardet100k"
 
 is_valid_root() {
   local root="$1"
@@ -19,7 +20,8 @@ is_valid_root() {
 pick_root() {
   local candidates=(
     "${SARDET100K_ROOT:-}"
-    "${REPO_ROOT}/data/SARDet_100K"
+    "${ALT_DATA_LINK}"
+    "${DATA_LINK}"
     "${HOME}/datasets/SARDet_100K/SARDet_100K"
     "${HOME}/datasets/SARDet_100K"
     "${HOME}/data/SARDet_100K/SARDet_100K"
@@ -46,12 +48,12 @@ fi
 
 mkdir -p "${REPO_ROOT}/data"
 
-if [[ -e "${DATA_LINK}" ]]; then
-  echo "OK: ${DATA_LINK} already exists."
+if [[ -e "${ALT_DATA_LINK}" ]]; then
+  echo "OK: ${ALT_DATA_LINK} already exists."
 else
-  ln -s "${ROOT}" "${DATA_LINK}"
-  echo "Linked: ${DATA_LINK} -> ${ROOT}"
+  ln -s "${ROOT}" "${ALT_DATA_LINK}"
+  echo "Linked: ${ALT_DATA_LINK} -> ${ROOT}"
 fi
 
 echo "Suggested env:"
-echo "  export SARDET100K_ROOT=\"${DATA_LINK}\""
+echo "  export SARDET100K_ROOT=\"${ALT_DATA_LINK}\""

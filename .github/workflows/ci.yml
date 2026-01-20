@@ -14,6 +14,6 @@ jobs:
         with:
           python-version: "3.10"
       - name: Shell syntax
-        run: bash -n scripts/*.sh visualization/*.sh
+        run: bash -n scripts/*.sh tools/*.sh visualization/*.sh
       - name: Python syntax
         run: python -m compileall -q sar_lora_dino scripts tools visualization

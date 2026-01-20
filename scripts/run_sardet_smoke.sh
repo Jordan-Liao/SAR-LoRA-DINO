@@ -3,7 +3,10 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_NAME="${ENV_NAME:-sar_lora_dino}"
-SARDET100K_ROOT="${SARDET100K_ROOT:-${REPO_ROOT}/data/SARDet_100K}"
+SARDET100K_ROOT="${SARDET100K_ROOT:-${REPO_ROOT}/data/sardet100k}"
+if [[ ! -e "${SARDET100K_ROOT}" && -e "${REPO_ROOT}/data/SARDet_100K" ]]; then
+  SARDET100K_ROOT="${REPO_ROOT}/data/SARDet_100K"
+fi
 CUDA_EXCLUDE_DEVICES="${CUDA_EXCLUDE_DEVICES:-}"
 
 cd "${REPO_ROOT}"

@@ -4,6 +4,7 @@
 
 - `scripts/verify_env.sh`: checks the conda env can import `timm`, `mmcv.ops`, `mmdet`, `sar_lora_dino` and sees CUDA.
 - `scripts/setup_env.sh`: optional helper to create a conda env and install the MMDetection stack + this repo.
+- `scripts/download_pretrained.sh`: pre-fetch timm backbone weights (optional).
 - `scripts/run_sardet_smoke.sh`: end-to-end smoke train+eval on small SARDet-100K subsets.
 - `scripts/run_sardet_smoke_cfg.sh`: smoke runner for any MMDet config (subset train+eval).
 - `scripts/run_sardet_full_cfg.sh`: full train + eval (val/test) runner for any MMDet config.
@@ -11,6 +12,7 @@
 ## Dataset utilities
 
 - `scripts/make_coco_subset.py`: deterministic COCO subset generator (by image sampling).
+- `scripts/prepare_sardet100k.sh`: convenience wrapper to link the dataset into `data/`.
 
 ## Evaluation
 

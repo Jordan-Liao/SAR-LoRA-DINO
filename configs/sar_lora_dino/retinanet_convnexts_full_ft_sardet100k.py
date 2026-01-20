@@ -1,8 +1,8 @@
 _base_ = [
-    "../../_base_/models/retinanet_r50_fpn.py",
-    "../../_base_/datasets/sardet100k.py",
-    "../../_base_/schedules/1x.py",
-    "../../_base_/default_runtime.py",
+    "../_base_/models/retinanet_r50_fpn.py",
+    "../_base_/datasets/sardet100k.py",
+    "../_base_/schedules/1x.py",
+    "../_base_/default_runtime.py",
 ]
 
 num_classes = 6
@@ -21,15 +21,13 @@ model = dict(
         model_name="convnext_small",
         pretrained=True,
         out_indices=(0, 1, 2, 3),
-        freeze_backbone=True,
+        freeze_backbone=False,
     ),
     neck=dict(
         in_channels=[96, 192, 384, 768],
         start_level=1,
     ),
-    bbox_head=dict(
-        num_classes=num_classes,
-    ),
+    bbox_head=dict(num_classes=num_classes),
 )
 
 optim_wrapper = dict(
@@ -42,3 +40,4 @@ optim_wrapper = dict(
     ),
     type="OptimWrapper",
 )
+

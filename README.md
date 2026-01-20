@@ -1,82 +1,64 @@
 # SAR-LoRA-DINO
 
-This repo focuses on **DINOv3 (ConvNeXt) + LoRA** for SAR object detection on the **SARDet-100K** benchmark, built on **MMDetection 3.x** (MMEngine/MMCV).
+Parameter-Efficient Fine-Tuning (PEFT) for **SAR object detection** with a **DINOv3-pretrained ConvNeXt-S** backbone, built on **MMDetection 3.x**.
 
-This repo includes runnable configs/scripts, plus an experiment ledger and result tables under `artifacts/`.
+Core idea: **freeze the DINOv3 ConvNeXt-S backbone**, inject **LoRA** into the ConvNeXt MLP (`mlp.fc1` / `mlp.fc2`, default `r=16, α=32, dropout=0`), and train **RetinaNet + FPN** on **SARDet-100K**.
 
-## Quick Start
+## Highlights
 
-- Install + dataset setup + runnable commands: `docs/GETTING_STARTED.md`
-- Installation (standalone): `docs/INSTALLATION.md`
-- Dataset notes: `docs/DATASET_SARDET100K.md`
-- Repo structure overview: `docs/PROJECT_STRUCTURE.md`
-- Conventions (naming / env vars): `docs/CONVENTIONS.md`
-- Configs explained: `docs/CONFIGS_EXPLAINED.md`
-- LoRA design & merge/unmerge: `docs/LORA_DESIGN.md`
-- Training / evaluation: `docs/TRAINING.md`, `docs/EVALUATION.md`
-- Model Zoo (configs + metrics pointers): `docs/MODEL_ZOO.md`
-- Export / visualization: `docs/EXPORT.md`
-- Artifacts & Releases (what goes in git vs Release): `docs/ARTIFACTS_AND_RELEASES.md`
-- Release checklist (what’s still missing): `docs/RELEASE_CHECKLIST.md`
+- **Backbone frozen + LoRA on MLP**: small trainable footprint vs full fine-tune (see `artifacts/experiments/experiment.md`).
+- **MMDetection project/plugin style**: `custom_imports` loads `sar_lora_dino` modules; no need to fork MMDet.
+- **Paper-facing configs**: stable, clean names under `configs/sar_lora_dino/` (baselines + LoRA variants).
 
-## Dataset
+## Quick links
 
-**Download**
+- Install: `docs/INSTALL.md`
+- Dataset: `docs/DATASET.md`
+- Training / Eval / Export: `docs/TRAINING.md`, `docs/EVALUATION.md`, `docs/EXPORT.md`
+- Reproduce: `docs/REPRODUCE.md`
+- Model Zoo: `docs/MODEL_ZOO.md`
 
-- Baidu Disk: https://pan.baidu.com/s/1dIFOm4V2pM_AjhmkD1-Usw?pwd=SARD
-- Kaggle: https://www.kaggle.com/datasets/greatbird/sardet-100k
+## Results (SARDet-100K Val, COCO bbox mAP)
 
-**Expected layout**
+Authoritative table (all runs/splits): `artifacts/experiments/experiment_results.tsv`
 
-```
-SARDet_100K/
-  Annotations/{train,val,test}.json
-  JPEGImages/{train,val,test}/
-```
+| Setting | Val mAP | Trainable Params (M) | Config |
+| --- | ---:| ---:| --- |
+| DINOv3 ConvNeXt-S linear probe (frozen) | 0.419 ± 0.006 (3 seeds) | 9.403 | `configs/sar_lora_dino/retinanet_dinov3_convnexts_linear_sardet100k.py` |
+| LoRA r=16, fc1+fc2 (frozen backbone) | 0.523 ± 0.028 (3 seeds) | 11.569 | `configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc1fc2_sardet100k.py` |
+| LoRA r=16, fc2-only + fine-tune stage3 | 0.569 | 18.876 | `configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc2_ft_stage3_sardet100k.py` |
+| DINOv3 ConvNeXt-S full fine-tune | 0.572 | 58.856 | `configs/sar_lora_dino/retinanet_dinov3_convnexts_full_ft_sardet100k.py` |
 
-Point the code to the dataset:
+## Installation
+
+See `docs/INSTALL.md`.
+
+## Data preparation
+
+See `docs/DATASET.md`.
+
+## Training & evaluation (example)
+
+Train:
 
 ```bash
-export SARDET100K_ROOT=/path/to/SARDet_100K
-# or: ln -s /path/to/SARDet_100K data/SARDet_100K
+ENV_NAME=sar_lora_dino bash tools/train.sh \
+  configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc1fc2_sardet100k.py \
+  --work-dir artifacts/work_dirs/E0002_full_seed0
 ```
 
-## Weights
+Eval to JSON:
 
-This repo does not vendor large checkpoints.
-
-- DINOv3 (ConvNeXt) backbones are pulled automatically by `timm` when `pretrained=True` (internet required).
-- Our trained SARDet-100K checkpoints: TBD.
-
-## Reproducibility
-
-- Smoke run (end-to-end): `bash scripts/run_sardet_smoke.sh`
-- Full train + eval (any config): `bash scripts/run_sardet_full_cfg.sh --config <...> --work-dir <...>`
-- VR export: `bash visualization/export_sardet_vr.sh --name <...> --config <...> --checkpoint <...>`
-- Experiment ledger + aggregated tables:
-  - `artifacts/experiments/experiment.md`
-  - `artifacts/experiments/experiment_results.tsv`
-
-## License
-
-This repository is mixed-licensed:
-
-- `LICENSE`: CC BY-NC 4.0 (repository-level assets by default)
-- `LICENSES/Apache-2.0.txt`: Apache 2.0 (MMDetection-style configs; see `THIRD_PARTY_NOTICES.md`)
-
-See `THIRD_PARTY_NOTICES.md` for attributions.
+```bash
+ENV_NAME=sar_lora_dino bash tools/test.sh \
+  --config configs/sar_lora_dino/retinanet_dinov3_convnexts_lora_r16_fc1fc2_sardet100k.py \
+  --checkpoint /path/to/checkpoint.pth \
+  --work-dir artifacts/work_dirs/eval_only \
+  --out-json artifacts/work_dirs/eval_only/val_metrics.json
+```
 
 ## Citation
 
-If you use this repo, see `CITATION.bib` / `CITATION.cff`.
+- Software: `CITATION.cff` / `CITATION.bib`
+- Dataset: SARDet-100K (see `CITATION.bib`)
 
-If you use the SARDet-100K dataset, please also cite:
-
-```bibtex
-@inproceedings{li2024sardet100k,
-  title={SARDet-100K: Towards Open-Source Benchmark and ToolKit for Large-Scale SAR Object Detection},
-  author={Yuxuan Li and Xiang Li and Weijie Li and Qibin Hou and Li Liu and Ming-Ming Cheng and Jian Yang},
-  year={2024},
-  booktitle={The Thirty-eighth Annual Conference on Neural Information Processing Systems (NeurIPS)},
-}
-```

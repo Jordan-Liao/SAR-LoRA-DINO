@@ -32,6 +32,8 @@ env/
 
 # Local runs / logs / exports
 /work_dirs/
+/work_dirs/**
+!/work_dirs/.gitkeep
 nohup.out
 *.log
 *.log.json
@@ -63,8 +65,14 @@ artifacts/bundles/**
 # Dataset (keep scripts/configs; do not vendor raw data)
 data/SARDet_100K
 data/SARDet_100K/
+data/sardet100k
+data/sardet100k/
 data/sardet_subsets
 data/sardet_subsets/
 
 # Experiment runner queues (local only)
 .rd_queue*/
+
+# Checkpoints (never commit)
+checkpoints/**
+!checkpoints/README.md
